@@ -111,7 +111,7 @@ function angleBetweenClockHands(date) {
   const hAngle = 0.5 * (60 * h + m);
   const mAngle = 6 * m;
   const delta = Math.abs(hAngle - mAngle);
-  return delta;
+  return delta * (Math.PI / 180);
 }
 
 
