@@ -226,10 +226,10 @@ const cssSelectorBuilder = {
 
   combine(selector1, combinator, selector2) {
     if (this.str) this.str = '';
-    console.log('selector1:', selector1);
+    // console.log('selector1:', selector1);
     this.str += selector1.build();
     this.str += ` ${combinator} `;
-    console.log('selector2:', selector2);
+    // console.log('selector2:', selector2);
     this.str += selector2.build();
     return this;
   },
