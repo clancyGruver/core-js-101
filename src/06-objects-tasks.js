@@ -20,8 +20,14 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  return {
+    width,
+    height,
+    getArea() {
+      return this.width * this.height;
+    },
+  };
 }
 
 
@@ -35,8 +41,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 
@@ -51,8 +57,10 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const obj = JSON.parse(json);
+  Object.setPrototypeOf(obj, proto);
+  return obj;
 }
 
 
@@ -110,33 +118,133 @@ function fromJSON(/* proto, json */) {
  *  For more examples see unit tests.
  */
 
+class Element {
+  constructor() {
+    this.element = '';
+    this.id = '';
+    this.classes = [];
+    this.attrs = [];
+    this.pseudoClasses = [];
+    this.pseudoElementVal = '';
+  }
+
+  set element(element) {
+    this.elementVal = element;
+  }
+
+  get element() {
+    if (this.elementVal) return this.elementVal;
+    return '';
+  }
+
+  set id(val) {
+    this.idVal = val;
+  }
+
+  get id() {
+    if (this.idVal) return `#${this.idVal}`;
+    return '';
+  }
+
+  set class(val) {
+    this.classes.push(val);
+  }
+
+  get class() {
+    if (this.classes.length) return `.${this.classes.join('.')}`;
+    return '';
+  }
+
+  set attr(val) {
+    this.attrs.push(val);
+  }
+
+  get attr() {
+    if (this.attrs.length) return this.attrs.map((el) => `[${el}]`).join('');
+    return '';
+  }
+
+  set pseudoClass(val) {
+    this.pseudoClasses.push(val);
+  }
+
+  get pseudoClass() {
+    if (this.pseudoClasses.length) return `:${this.pseudoClasses.join(':')}`;
+    return '';
+  }
+
+  set pseudoElement(val) {
+    this.pseudoElementVal = val;
+  }
+
+  get pseudoElement() {
+    if (this.pseudoElementVal) return `::${this.pseudoElementVal}`;
+    return '';
+  }
+
+  toString() {
+    return `${this.element}${this.id}${this.class}${this.attr}${this.pseudoClass}${this.pseudoElement}`;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    this.elemenVal = new Element();
+    this.elemenVal.element = value;
+    return this;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    if (!this.elemenVal) this.elemenVal = new Element();
+    this.elemenVal.id = value;
+    return this;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    if (!this.elemenVal) this.elemenVal = new Element();
+    this.elemenVal.class = value;
+    return this;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    if (!this.elemenVal) this.elemenVal = new Element();
+    this.elemenVal.attr = value;
+    return this;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    if (!this.elemenVal) this.elemenVal = new Element();
+    this.elemenVal.pseudoClass = value;
+    return this;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    if (!this.elemenVal) this.elemenVal = new Element();
+    this.elemenVal.pseudoElement = value;
+    return this;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
+  combine(selector1, combinator, selector2) {
+    if (this.str) this.str = '';
+    console.log('selector1:', selector1);
+    this.str += selector1.build();
+    this.str += ` ${combinator} `;
+    console.log('selector2:', selector2);
+    this.str += selector2.build();
+    return this;
+  },
+
+  stringify() {
     throw new Error('Not implemented');
+    /*
+    if (this.elemenVal) return this.build();
+    return this.str; */
+  },
+
+  build() {
+    const str = this.elemenVal.toString();
+    delete this.elemenVal;
+    return str;
   },
 };
 
