@@ -338,8 +338,13 @@ function isCreditCardNumber(ccn) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  let res = num;
+  const reducer = (acc, el) => acc + el * 1;
+  while ((res * 1) > 9) {
+    res = res.toString().split('').reduce(reducer, 0);
+  }
+  return res;
 }
 
 
@@ -364,8 +369,23 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const res = [];
+  const bracekets = str.split('');
+  for (let i = 0; i < bracekets.length; i += 1) {
+    const el = bracekets[i];
+    if (['[', '{', '<', '('].includes(el)) res.push(el);
+    else {
+      if (res.length === 0) return false;
+      const curBracket = res.pop();
+      const isValid = (curBracket === '[' && el === ']')
+        || (curBracket === '{' && el === '}')
+        || (curBracket === '(' && el === ')')
+        || (curBracket === '<' && el === '>');
+      if (!isValid) return false;
+    }
+  }
+  return res.length === 0;
 }
 
 
@@ -389,8 +409,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 
@@ -429,8 +449,14 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  if (m1[0].length !== m2.length) return false;
+  const res = [];
+  for (let i = 0; i < m2.length; i += 1) {
+  //  res[i].push(m1[i].reduce((acc, el, idx) => acc + el + m2[idx][i], 0));
+  }
+  if (true) throw new Error('Not implemented');
+  else return res;
 }
 
 
@@ -464,8 +490,32 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const diag = {
+    l: {},
+    r: {},
+  };
+  for (let i = 0; i < 3; i += 1) {
+    const diagLE = position[i][i];
+    const diagRE = position[2 - i][i];
+    diag.l[diagLE] = diag.l[diagLE] ? diag.l[diagLE] + 1 : 1;
+    diag.r[diagRE] = diag.r[diagRE] ? diag.r[diagRE] + 1 : 1;
+    const res = {
+      row: {},
+      col: {},
+    };
+    for (let j = 0; j < 3; j += 1) {
+      const colE = position[j][i];
+      const rowE = position[i][j];
+      res.col[colE] = res.col[colE] ? res.col[colE] + 1 : 1;
+      res.row[rowE] = res.row[rowE] ? res.row[rowE] + 1 : 1;
+      if (res.col.X === 3 || res.row.X === 3) return 'X';
+      if (res.col[0] === 3 || res.row[0] === 3) return 0;
+    }
+  }
+  if (diag.l.X === 3 || diag.r.X === 3) return 'X';
+  if (diag.l[0] === 3 || diag.r[0] === 3) return 0;
+  return undefined;
 }
 
 
