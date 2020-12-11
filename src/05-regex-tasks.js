@@ -79,7 +79,7 @@ function getRegexForPitSpot() {
  *   'Pa55'.match(validator) => false
  */
 function getPasswordValidator(minLength) {
-  return new RegExp(`^[^ \n](?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z][^_]{${minLength},}$`, 'g');
+  return new RegExp(`^[^ ](?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[0-9a-zA-Z][^_]{${minLength},}$`, 'g');
 }
 
 
