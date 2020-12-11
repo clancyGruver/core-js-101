@@ -426,10 +426,21 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const splitted = [];
+  pathes.forEach((el, idx) => {
+    splitted[idx] = el.split(/(?<=\/)/g);
+  });
+  const len = Math.max(...splitted.map((el) => el.length));
+  for (let i = 0; i < len; i += 1) {
+    let res = true;
+    for (let j = 1; j < splitted.length; j += 1) {
+      if (splitted[j][i] !== splitted[j - 1][i]) res = false;
+    }
+    if (res === false) return splitted[0].slice(0, i).join('');
+  }
+  return splitted[0].join('');
 }
-
 
 /**
  * Returns the product of two specified matrixes.
@@ -451,12 +462,16 @@ function getCommonDirectoryPath(/* pathes */) {
  */
 function getMatrixProduct(m1, m2) {
   if (m1[0].length !== m2.length) return false;
+  const len1 = m1.length;
+  const len2 = m2[0].length;
   const res = [];
-  for (let i = 0; i < m2.length; i += 1) {
-  //  res[i].push(m1[i].reduce((acc, el, idx) => acc + el + m2[idx][i], 0));
+  for (let i = 0; i < len1; i += 1) {
+    res[i] = [];
+    for (let j = 0; j < len2; j += 1) {
+      res[i][j] = m1[i].reduce((acc, val, idx) => acc + val * m2[idx][j], 0);
+    }
   }
-  if (true) throw new Error('Not implemented');
-  else return res;
+  return res;
 }
 
 
