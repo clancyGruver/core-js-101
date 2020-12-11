@@ -120,131 +120,143 @@ function fromJSON(proto, json) {
 
 class Element {
   constructor() {
-    this.element = '';
-    this.id = '';
+    this.currentOrder = 0;
+    this.elementVal = '';
+    this.idVal = '';
     this.classes = [];
     this.attrs = [];
     this.pseudoClasses = [];
     this.pseudoElementVal = '';
+    this.error = new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    this.orderError = new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
   }
 
-  set element(element) {
+  element(element) {
+    if (this.elementVal) throw this.error;
+    if (this.currentOrder > 1) throw this.orderError;
+    this.currentOrder = 1;
     this.elementVal = element;
+    return this;
   }
 
-  get element() {
+  getElement() {
     if (this.elementVal) return this.elementVal;
     return '';
   }
 
-  set id(val) {
+  id(val) {
+    if (this.idVal) throw this.error;
+    if (this.currentOrder > 2) throw this.orderError;
+    this.currentOrder = 2;
     this.idVal = val;
+    return this;
   }
 
-  get id() {
+  getId() {
     if (this.idVal) return `#${this.idVal}`;
     return '';
   }
 
-  set class(val) {
+  class(val) {
+    if (this.currentOrder > 3) throw this.orderError;
+    this.currentOrder = 3;
     this.classes.push(val);
+    return this;
   }
 
-  get class() {
+  getClass() {
     if (this.classes.length) return `.${this.classes.join('.')}`;
     return '';
   }
 
-  set attr(val) {
+  attr(val) {
+    if (this.currentOrder > 4) throw this.orderError;
+    this.currentOrder = 4;
     this.attrs.push(val);
+    return this;
   }
 
-  get attr() {
+  getAttr() {
     if (this.attrs.length) return this.attrs.map((el) => `[${el}]`).join('');
     return '';
   }
 
-  set pseudoClass(val) {
+  pseudoClass(val) {
+    if (this.currentOrder > 5) throw this.orderError;
+    this.currentOrder = 5;
     this.pseudoClasses.push(val);
+    return this;
   }
 
-  get pseudoClass() {
+  getPseudoClass() {
     if (this.pseudoClasses.length) return `:${this.pseudoClasses.join(':')}`;
     return '';
   }
 
-  set pseudoElement(val) {
+  pseudoElement(val) {
+    if (this.currentOrder > 6) throw this.orderError;
+    this.currentOrder = 6;
+    if (this.pseudoElementVal) throw this.error;
     this.pseudoElementVal = val;
+    return this;
   }
 
-  get pseudoElement() {
+  getPseudoElement() {
     if (this.pseudoElementVal) return `::${this.pseudoElementVal}`;
     return '';
   }
 
-  toString() {
-    return `${this.element}${this.id}${this.class}${this.attr}${this.pseudoClass}${this.pseudoElement}`;
+  stringify() {
+    return `${this.getElement()}${this.getId()}${this.getClass()}${this.getAttr()}${this.getPseudoClass()}${this.getPseudoElement()}`;
   }
 }
 
 const cssSelectorBuilder = {
   element(value) {
-    this.elemenVal = new Element();
-    this.elemenVal.element = value;
-    return this;
+    const elemenVal = new Element();
+    elemenVal.element(value);
+    return elemenVal;
   },
 
   id(value) {
-    if (!this.elemenVal) this.elemenVal = new Element();
-    this.elemenVal.id = value;
-    return this;
+    const elemenVal = new Element();
+    elemenVal.id(value);
+    return elemenVal;
   },
 
   class(value) {
-    if (!this.elemenVal) this.elemenVal = new Element();
-    this.elemenVal.class = value;
-    return this;
+    const elemenVal = new Element();
+    elemenVal.class(value);
+    return elemenVal;
   },
 
   attr(value) {
-    if (!this.elemenVal) this.elemenVal = new Element();
-    this.elemenVal.attr = value;
-    return this;
+    const elemenVal = new Element();
+    elemenVal.attr(value);
+    return elemenVal;
   },
 
   pseudoClass(value) {
-    if (!this.elemenVal) this.elemenVal = new Element();
-    this.elemenVal.pseudoClass = value;
-    return this;
+    const elemenVal = new Element();
+    elemenVal.pseudoClass(value);
+    return elemenVal;
   },
 
   pseudoElement(value) {
-    if (!this.elemenVal) this.elemenVal = new Element();
-    this.elemenVal.pseudoElement = value;
-    return this;
+    const elemenVal = new Element();
+    elemenVal.pseudoElement(value);
+    return elemenVal;
   },
 
   combine(selector1, combinator, selector2) {
-    if (this.str) this.str = '';
-    // console.log('selector1:', selector1);
-    this.str += selector1.build();
-    this.str += ` ${combinator} `;
-    // console.log('selector2:', selector2);
-    this.str += selector2.build();
+    this.str = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
     return this;
   },
 
   stringify() {
-    throw new Error('Not implemented');
-    /*
-    if (this.elemenVal) return this.build();
-    return this.str; */
-  },
-
-  build() {
-    const str = this.elemenVal.toString();
-    delete this.elemenVal;
-    return str;
+    const s = this.str;
+    this.str = '';
+    return s;
   },
 };
 
